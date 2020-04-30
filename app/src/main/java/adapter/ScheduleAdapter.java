@@ -81,6 +81,11 @@ public class ScheduleAdapter extends BaseAdapter {
         ImageButton _addSub = convertView.findViewById(R.id.addSub);
         _number.setText(scheduleModel.getName());
 
+        if (BP.isAdmin){
+            _addSub.setVisibility(View.VISIBLE);
+        }else {
+            _addSub.setVisibility(View.GONE);
+        }
 
         _number.setOnClickListener(new View.OnClickListener() {
             @Override

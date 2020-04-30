@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -122,10 +123,19 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private MenuItem addItem;
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.add, menu);
-        return super.onCreateOptionsMenu(menu);
+        addItem = menu.findItem(R.id.menu_add_website);
+
+        if (BP.isAdmin){
+            addItem.setVisible(true);
+        }else {
+            addItem.setVisible(false);
+        }
+
+        return true;
     }
 
     @Override
@@ -133,14 +143,14 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
-                break;
+                return true;
             case R.id.menu_add_website:
                 popUpEditText();
-                break;
+                return true;
             case R.id.menu_home:
                 startActivity(new Intent(MainActivity.this,MainActivity.class));
                 finish();
-                break;
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
