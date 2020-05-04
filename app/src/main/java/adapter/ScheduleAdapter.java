@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import bp.BP;
+import info.atiar.duvalcounty.Main2Activity;
+import info.atiar.duvalcounty.Main3Activity;
 import info.atiar.duvalcounty.MainActivity;
 import info.atiar.duvalcounty.R;
 import model.ScheduleModel;
@@ -101,53 +104,21 @@ public class ScheduleAdapter extends BaseAdapter {
                 p = data.get(position).getUniqueID();
                 switch (scheduleModel.getLevel()){
                     case "1":
-                        ((MainActivity)activity).getSupportActionBar().setTitle(data.get(position).getName());
 
                         Log.e(tag, "now  in DB ref level2");
-                        mDatabase = FirebaseDatabase.getInstance().getReference("level2");
-                        data.clear();
-                        mDatabase.addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                for (DataSnapshot websiteData : dataSnapshot.getChildren()){
-                                    ScheduleModel s = websiteData.getValue(ScheduleModel.class);
-                                    if (s.getParent().equals(p)){
-                                        data.add(s);
-                                    }
-                                }
-                                notifyDataSetChanged();
-                            }
-                            @Override
-                            public void onCancelled(DatabaseError error) {
-                                // Failed to read value
-                                Log.w(tag, "Failed to read value.", error.toException());
-                            }
-                        });
+
+                        Intent intent = new Intent(context, Main2Activity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.putExtra("data", data.get(position));
+                        context.startActivity(intent);
 
                         break;
                     case "2":
-                        ((MainActivity)activity).getSupportActionBar().setTitle(data.get(position).getName());
                         Log.e(tag, "now  in DB ref level3");
-                        mDatabase = FirebaseDatabase.getInstance().getReference("level3");
-                        data.clear();
-                        mDatabase.addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                for (DataSnapshot websiteData : dataSnapshot.getChildren()){
-                                    ScheduleModel s = websiteData.getValue(ScheduleModel.class);
-                                    if (s.getParent().equals(p)){
-                                        data.add(s);
-                                    }
-                                }
-                                notifyDataSetChanged();
-                            }
-                            @Override
-                            public void onCancelled(DatabaseError error) {
-                                // Failed to read value
-                                Log.w(tag, "Failed to read value.", error.toException());
-                            }
-                        });
-
+                        Intent intent1 = new Intent(context, Main3Activity.class);
+                        intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent1.putExtra("data", data.get(position));
+                        context.startActivity(intent1);
                         break;
                 }
                 notifyDataSetChanged();
