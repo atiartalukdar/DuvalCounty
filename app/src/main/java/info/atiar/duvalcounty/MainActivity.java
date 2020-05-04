@@ -54,6 +54,11 @@ public class MainActivity extends AppCompatActivity {
         _listView = findViewById(R.id.categoryList);
         mDatabase = FirebaseDatabase.getInstance().getReference("level1");
 
+        if (BP.isAdmin){
+            getSupportActionBar().setTitle("Duval County Admin");
+        }else {
+            getSupportActionBar().setTitle("Duval County");
+        }
         //Firebase stuff
         auth = FirebaseAuth.getInstance();
         userId = auth.getUid();

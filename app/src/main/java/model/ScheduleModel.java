@@ -38,6 +38,27 @@ public class ScheduleModel {
         return createdAt;
     }
 
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
+    }
+
+    public void setUniqueID(String uniqueID) {
+        this.uniqueID = uniqueID;
+    }
+
+    public void setParent(String parent) {
+        this.parent = parent;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
     @Override
     public String toString() {
         return "ScheduleModel{" +

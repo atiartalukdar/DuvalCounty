@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -77,23 +78,27 @@ public class ScheduleAdapter extends BaseAdapter {
             convertView = inflater.inflate(R.layout.list_item, null);
 
 
+        LinearLayout _lout = convertView.findViewById(R.id.lout);
         TextView _number = convertView.findViewById(R.id.itemTV);
-        ImageButton _addSub = convertView.findViewById(R.id.addSub);
+        Button _addSub = convertView.findViewById(R.id.addSub);
+        Button _editItem = convertView.findViewById(R.id.editItem);
         _number.setText(scheduleModel.getName());
 
         if (BP.isAdmin){
+            _lout.setVisibility(View.VISIBLE);
             _addSub.setVisibility(View.VISIBLE);
+            _editItem.setVisibility(View.VISIBLE);
         }else {
+            _lout.setVisibility(View.GONE);
             _addSub.setVisibility(View.GONE);
+            _editItem.setVisibility(View.GONE);
         }
 
         _number.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 Log.e(tag, data.get(position).toString());
                 p = data.get(position).getUniqueID();
-
                 switch (scheduleModel.getLevel()){
                     case "1":
                         ((MainActivity)activity).getSupportActionBar().setTitle(data.get(position).getName());
@@ -145,7 +150,6 @@ public class ScheduleAdapter extends BaseAdapter {
 
                         break;
                 }
-
                 notifyDataSetChanged();
             }
         });
@@ -153,11 +157,16 @@ public class ScheduleAdapter extends BaseAdapter {
         _addSub.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                popUpEditText(scheduleModel);
+                popUpEditText(position);
             }
         });
 
-
+        _editItem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateDataEditText(position);
+            }
+        });
 
         return convertView;
 
@@ -170,9 +179,9 @@ public class ScheduleAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
-    public void popUpEditText(ScheduleModel scheduleModel) {
+    public void popUpEditText(int position) {
 
-        switch (scheduleModel.getLevel()){
+        switch (data.get(position).getLevel()){
             case "1":
                 mDatabase = FirebaseDatabase.getInstance().getReference("level2");
                 level = "2";
@@ -184,7 +193,7 @@ public class ScheduleAdapter extends BaseAdapter {
         }
 
         uniqueKey = mDatabase.push().getKey();;
-        parent = scheduleModel.getParent();
+        parent = data.get(position).getUniqueID();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Enter the text");
@@ -220,4 +229,56 @@ public class ScheduleAdapter extends BaseAdapter {
         builder.show();
 
     }
+
+    public void updateDataEditText(final int position) {
+
+        switch (data.get(position).getLevel()){
+            case "1":
+                mDatabase = FirebaseDatabase.getInstance().getReference("level1");
+                break;
+            case "2":
+                mDatabase = FirebaseDatabase.getInstance().getReference("level2");
+                break;
+            case "3":
+                mDatabase = FirebaseDatabase.getInstance().getReference("level3");
+                break;
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Enter the text");
+
+        final EditText input = new EditText(activity);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        input.setLayoutParams(lp);
+        builder.setView(input);
+        input.setText(data.get(position).getName());
+
+        // Set up the buttons
+        builder.setPositiveButton("Update", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                if (input.getText().equals("")||input.getText().equals("")){
+                    Log.e(tag, "No Input added.");
+                }else {
+                    //websiteLists.add(new WebsitesModel(input.getText().toString(),4+"",uniqueKey, BP.getCurrentDateTime()));
+                    data.get(position).setName(input.getText().toString());
+                    mDatabase.child(data.get(position).getUniqueID()).setValue(data.get(position));
+                    data.clear();
+                    notifyDataSetChanged();
+                }
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        builder.show();
+
+    }
+
 }
