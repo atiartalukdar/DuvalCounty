@@ -75,10 +75,10 @@ public class Main2Activity extends AppCompatActivity {
     }
 
     private void websiteDataFromDB(){
-        scheduleModelList.clear();
         mDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                scheduleModelList.clear();
                 for (DataSnapshot websiteData : dataSnapshot.getChildren()){
                     ScheduleModel s = websiteData.getValue(ScheduleModel.class);
                     if (s.getParent().equals(p)){
@@ -99,7 +99,7 @@ public class Main2Activity extends AppCompatActivity {
         uniqueKey = mDatabase.push().getKey();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Comments");
+        builder.setTitle("Add sub item of - " + scheduleModel.getName());
 
         final EditText input = new EditText(this);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
@@ -118,7 +118,7 @@ public class Main2Activity extends AppCompatActivity {
                     Log.e(tag, "No Input added.");
                 }else {
                     //websiteLists.add(new WebsitesModel(input.getText().toString(),4+"",uniqueKey, BP.getCurrentDateTime()));
-                    ScheduleModel scheduleModel = new ScheduleModel(input.getText().toString(),"1",uniqueKey, uniqueKey, BP.getCurrentDateTime());
+                    ScheduleModel scheduleModel = new ScheduleModel(input.getText().toString(),"2",uniqueKey, p, BP.getCurrentDateTime());
                     mDatabase.child(uniqueKey).setValue(scheduleModel);
                 }
             }
@@ -138,7 +138,13 @@ public class Main2Activity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.add, menu);
         addItem = menu.findItem(R.id.menu_add_website);
-        addItem.setVisible(false);
+
+        if (BP.isAdmin){
+            addItem.setVisible(true);
+        }else {
+            addItem.setVisible(false);
+        }
+
         return true;
     }
 

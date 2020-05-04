@@ -83,17 +83,14 @@ public class ScheduleAdapter extends BaseAdapter {
 
         LinearLayout _lout = convertView.findViewById(R.id.lout);
         TextView _number = convertView.findViewById(R.id.itemTV);
-        Button _addSub = convertView.findViewById(R.id.addSub);
         Button _editItem = convertView.findViewById(R.id.editItem);
         _number.setText(scheduleModel.getName());
 
         if (BP.isAdmin){
             _lout.setVisibility(View.VISIBLE);
-            _addSub.setVisibility(View.VISIBLE);
             _editItem.setVisibility(View.VISIBLE);
         }else {
             _lout.setVisibility(View.GONE);
-            _addSub.setVisibility(View.GONE);
             _editItem.setVisibility(View.GONE);
         }
 
@@ -122,13 +119,6 @@ public class ScheduleAdapter extends BaseAdapter {
                         break;
                 }
                 notifyDataSetChanged();
-            }
-        });
-
-        _addSub.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                popUpEditText(position);
             }
         });
 
