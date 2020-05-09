@@ -8,6 +8,13 @@
     android:layout_height="match_parent">
 
 
+    <ImageView
+        android:src="@drawable/top"
+        android:layout_width="match_parent"
+        android:layout_height="80dp">
+
+    </ImageView>
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
