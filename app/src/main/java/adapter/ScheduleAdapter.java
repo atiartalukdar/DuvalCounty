@@ -16,12 +16,14 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -84,6 +86,7 @@ public class ScheduleAdapter extends BaseAdapter {
         LinearLayout _lout = convertView.findViewById(R.id.lout);
         TextView _number = convertView.findViewById(R.id.itemTV);
         Button _editItem = convertView.findViewById(R.id.editItem);
+        Button _deleteItem = convertView.findViewById(R.id.deleteItem);
         _number.setText(scheduleModel.getName());
 
         if (BP.isAdmin){
@@ -129,6 +132,12 @@ public class ScheduleAdapter extends BaseAdapter {
             }
         });
 
+        _deleteItem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteDataEditText(position);
+            }
+        });
         return convertView;
 
     }
@@ -241,5 +250,163 @@ public class ScheduleAdapter extends BaseAdapter {
         builder.show();
 
     }
+
+    public void deleteDataEditText(final int position) {
+
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Are you sure want to  delete");
+
+        // Set up the buttons
+        builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                switch (data.get(position).getLevel()){
+                    case "1":
+                        deleteLevel1(position);
+                        break;
+                    case "2":
+                        deleteLevel2(position);
+                        break;
+                    case "3":
+                        deleteLevel3(position);
+                        break;
+                }
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        builder.show();
+
+    }
+
+    private void deleteLevel3(int  pos){
+        mDatabase = FirebaseDatabase.getInstance().getReference("level3");
+
+        //set what would happen when positive button is clicked
+        Query applesQuery = mDatabase.orderByChild("uniqueID").equalTo(data.get(pos).getUniqueID());
+        applesQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot appleSnapshot : dataSnapshot.getChildren()) {
+                    appleSnapshot.getRef().removeValue();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(tag, "onCancelled", databaseError.toException());
+            }
+        });
+
+
+    }
+
+    private void deleteLevel2(final int  pos){
+        mDatabase = FirebaseDatabase.getInstance().getReference("level2");
+        final DatabaseReference mDatabase3 = FirebaseDatabase.getInstance().getReference("level3");
+
+        //set what would happen when positive button is clicked
+        Query applesQuery = mDatabase3.orderByChild("parent").equalTo(data.get(pos).getUniqueID());
+        applesQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot appleSnapshot : dataSnapshot.getChildren()) {
+                    appleSnapshot.getRef().removeValue();
+                }
+
+                Query applesQuery1 = mDatabase.orderByChild("uniqueID").equalTo(data.get(pos).getUniqueID());
+                applesQuery1.addListenerForSingleValueEvent( new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for (DataSnapshot appleSnapshot : dataSnapshot.getChildren()) {
+                            appleSnapshot.getRef().removeValue();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(tag, "onCancelled", databaseError.toException());
+            }
+        });
+
+
+    }
+
+    private void deleteLevel1(final int  pos){
+        mDatabase = FirebaseDatabase.getInstance().getReference("level1");
+        final DatabaseReference mDatabase2 = FirebaseDatabase.getInstance().getReference("level2");
+        final DatabaseReference mDatabase3 = FirebaseDatabase.getInstance().getReference("level3");
+
+        //set what would happen when positive button is clicked
+        Query applesQuery = mDatabase2.orderByChild("parent").equalTo(data.get(pos).getUniqueID());
+        applesQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot appleSnapshot : dataSnapshot.getChildren()) {
+                    //appleSnapshot.getRef().removeValue();
+                    String uIDLevel2 = appleSnapshot.getValue(ScheduleModel.class).getUniqueID();
+
+                    Query applesQuery1 = mDatabase3.orderByChild("parent").equalTo(uIDLevel2);
+                    applesQuery1.addListenerForSingleValueEvent( new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            for (DataSnapshot appleSnapshot : dataSnapshot.getChildren()) {
+                                appleSnapshot.getRef().removeValue();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
+                    appleSnapshot.getRef().removeValue();
+
+
+                }
+
+                Query applesQuery1 = mDatabase.orderByChild("uniqueID").equalTo(data.get(pos).getUniqueID());
+                applesQuery1.addListenerForSingleValueEvent( new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for (DataSnapshot appleSnapshot : dataSnapshot.getChildren()) {
+                            appleSnapshot.getRef().removeValue();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(tag, "onCancelled", databaseError.toException());
+            }
+        });
+
+
+    }
+
+
+
 
 }

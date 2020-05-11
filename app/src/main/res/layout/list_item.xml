@@ -38,14 +38,29 @@
 
             <LinearLayout
                 android:id="@+id/lout"
-                android:layout_width="60dp"
+                android:layout_gravity="right|center"
+                android:layout_width="30dp"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
                 <Button
+                    android:layout_gravity="top"
+                    android:id="@+id/deleteItem"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_weight="1"
+                    android:layout_margin="5dp"
+                    android:gravity="bottom"
+                    android:visibility="visible"
+                    android:background="@drawable/ic_action_delete">
+
+                </Button>
+
+                <Button
+                    android:layout_gravity="bottom"
                     android:id="@+id/editItem"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:layout_weight="1"
                     android:layout_margin="5dp"
                     android:gravity="bottom"

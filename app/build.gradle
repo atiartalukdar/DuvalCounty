@@ -8,8 +8,8 @@ android {
         applicationId "info.atiar.duvalcounty"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 2
-        versionName "1.1"
+        versionCode 3
+        versionName "3.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders = [
                 onesignal_app_id               : 'b89d9da2-e37a-438c-8846-53b7eedc4c2f',
