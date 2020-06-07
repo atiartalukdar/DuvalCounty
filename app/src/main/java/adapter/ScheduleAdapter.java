@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -424,15 +425,13 @@ public class ScheduleAdapter extends BaseAdapter {
         final DatabaseReference mDatabase3 = FirebaseDatabase.getInstance().getReference("level3");
 
         //set what would happen when positive button is clicked
-        Query applesQuery = mDatabase2.orderByChild("parent").equalTo(data.get(pos).getUniqueID());
+        Query applesQuery = mDatabase1.orderByChild("parent").equalTo(data.get(pos).getUniqueID());
         applesQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot appleSnapshot : dataSnapshot.getChildren()) {
-                    //appleSnapshot.getRef().removeValue();
-                    String uIDLevel2 = appleSnapshot.getValue(ScheduleModel.class).getUniqueID();
 
-                    Query applesQuery1 = mDatabase3.orderByChild("parent").equalTo(uIDLevel2);
+                if (dataSnapshot.getChildrenCount()<=0){
+                    Query applesQuery1 = mDatabase.orderByChild("uniqueID").equalTo(data.get(pos).getUniqueID());
                     applesQuery1.addListenerForSingleValueEvent( new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -446,26 +445,13 @@ public class ScheduleAdapter extends BaseAdapter {
 
                         }
                     });
-
-                    appleSnapshot.getRef().removeValue();
-
-
+                }else {
+                    /*for (int i=0; i<dataSnapshot.getChildrenCount()-1;i++){
+                        deleteLevel1(i);
+                    }*/
+                    Toast.makeText(context, "First delete the inner content, then delete this one. ",Toast.LENGTH_LONG).show();
                 }
 
-                Query applesQuery1 = mDatabase.orderByChild("uniqueID").equalTo(data.get(pos).getUniqueID());
-                applesQuery1.addListenerForSingleValueEvent( new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for (DataSnapshot appleSnapshot : dataSnapshot.getChildren()) {
-                            appleSnapshot.getRef().removeValue();
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
 
 
             }
