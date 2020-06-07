@@ -9,11 +9,10 @@ import java.util.Date;
 import java.util.Locale;
 
 public class BP {
-    public static final boolean isAdmin = false;
+    public static final boolean isAdmin = true;
     public static String getCurrentDateTime(){
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
         String currentDateandTime = sdf.format(new Date());
         return currentDateandTime;
     }
-
 }

@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -30,14 +29,14 @@ import adapter.ScheduleAdapter;
 import bp.BP;
 import model.ScheduleModel;
 
-public class MainActivity extends AppCompatActivity {
+public class Main1Activity extends AppCompatActivity {
     final String tag = getClass().getSimpleName() + "Atiar - ";
 
     ListView _listView;
     private DatabaseReference mDatabase;
     private FirebaseAuth auth;
-    String userId,uniqueKey;
-
+    String userId,uniqueKey,p;
+    ScheduleModel scheduleModel;
     ScheduleAdapter scheduleAdapter;
     private List<ScheduleModel> scheduleModelList = new ArrayList<>();
 
@@ -52,13 +51,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         _listView = findViewById(R.id.categoryList);
-        mDatabase = FirebaseDatabase.getInstance().getReference("level0");
+        mDatabase = FirebaseDatabase.getInstance().getReference("level1");
 
         if (BP.isAdmin){
             getSupportActionBar().setTitle("Duval County Admin");
         }else {
             getSupportActionBar().setTitle("Duval County");
         }
+
+        scheduleModel = ((ScheduleModel) getIntent().getSerializableExtra("data"));
+        p = scheduleModel.getUniqueID();
+        getSupportActionBar().setTitle(scheduleModel.getName());
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         //Firebase stuff
         auth = FirebaseAuth.getInstance();
         userId = auth.getUid();
@@ -75,10 +79,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 scheduleModelList.clear();
-
                 for (DataSnapshot websiteData : dataSnapshot.getChildren()){
-                    ScheduleModel scheduleModel = websiteData.getValue(ScheduleModel.class);
-                    scheduleModelList.add(scheduleModel);
+                    ScheduleModel s = websiteData.getValue(ScheduleModel.class);
+                    if (s.getParent().equals(p)){
+                        scheduleModelList.add(s);
+                    }
                 }
                 scheduleAdapter.notifyDataSetChanged();
             }
@@ -94,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
         uniqueKey = mDatabase.push().getKey();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Comments");
+        builder.setTitle("Add sub item of - " + scheduleModel.getName());
 
         final EditText input = new EditText(this);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
@@ -113,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.e(tag, "No Input added.");
                 }else {
                     //websiteLists.add(new WebsitesModel(input.getText().toString(),4+"",uniqueKey, BP.getCurrentDateTime()));
-                    ScheduleModel scheduleModel = new ScheduleModel(input.getText().toString(),"0",uniqueKey, uniqueKey, BP.getCurrentDateTime());
+                    ScheduleModel scheduleModel = new ScheduleModel(input.getText().toString(),"1",uniqueKey, p, BP.getCurrentDateTime());
                     mDatabase.child(uniqueKey).setValue(scheduleModel);
                 }
             }
@@ -153,11 +158,16 @@ public class MainActivity extends AppCompatActivity {
                 popUpEditText();
                 return true;
             case R.id.menu_home:
-                startActivity(new Intent(MainActivity.this,MainActivity.class));
+                startActivity(new Intent(Main1Activity.this,MainActivity.class));
                 finish();
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
 }

@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import bp.BP;
+import info.atiar.duvalcounty.Main1Activity;
 import info.atiar.duvalcounty.Main2Activity;
 import info.atiar.duvalcounty.Main3Activity;
 import info.atiar.duvalcounty.MainActivity;
@@ -103,15 +104,19 @@ public class ScheduleAdapter extends BaseAdapter {
                 Log.e(tag, data.get(position).toString());
                 p = data.get(position).getUniqueID();
                 switch (scheduleModel.getLevel()){
+                    case "0":
+                        Log.e(tag, "now  in DB ref level1");
+                        Intent intent0 = new Intent(context, Main1Activity.class);
+                        intent0.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent0.putExtra("data", data.get(position));
+                        context.startActivity(intent0);
+                        break;
                     case "1":
-
                         Log.e(tag, "now  in DB ref level2");
-
                         Intent intent = new Intent(context, Main2Activity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         intent.putExtra("data", data.get(position));
                         context.startActivity(intent);
-
                         break;
                     case "2":
                         Log.e(tag, "now  in DB ref level3");
@@ -203,6 +208,9 @@ public class ScheduleAdapter extends BaseAdapter {
     public void updateDataEditText(final int position) {
 
         switch (data.get(position).getLevel()){
+            case "0":
+                mDatabase = FirebaseDatabase.getInstance().getReference("level0");
+                break;
             case "1":
                 mDatabase = FirebaseDatabase.getInstance().getReference("level1");
                 break;
@@ -263,6 +271,9 @@ public class ScheduleAdapter extends BaseAdapter {
             public void onClick(DialogInterface dialog, int which) {
 
                 switch (data.get(position).getLevel()){
+                    case "0":
+                        deleteLevel0(position);
+                        break;
                     case "1":
                         deleteLevel1(position);
                         break;
@@ -406,6 +417,67 @@ public class ScheduleAdapter extends BaseAdapter {
 
     }
 
+    private void deleteLevel0(final int  pos){
+        mDatabase = FirebaseDatabase.getInstance().getReference("level0");
+        DatabaseReference mDatabase1 = FirebaseDatabase.getInstance().getReference("level1");
+        final DatabaseReference mDatabase2 = FirebaseDatabase.getInstance().getReference("level2");
+        final DatabaseReference mDatabase3 = FirebaseDatabase.getInstance().getReference("level3");
+
+        //set what would happen when positive button is clicked
+        Query applesQuery = mDatabase2.orderByChild("parent").equalTo(data.get(pos).getUniqueID());
+        applesQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot appleSnapshot : dataSnapshot.getChildren()) {
+                    //appleSnapshot.getRef().removeValue();
+                    String uIDLevel2 = appleSnapshot.getValue(ScheduleModel.class).getUniqueID();
+
+                    Query applesQuery1 = mDatabase3.orderByChild("parent").equalTo(uIDLevel2);
+                    applesQuery1.addListenerForSingleValueEvent( new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            for (DataSnapshot appleSnapshot : dataSnapshot.getChildren()) {
+                                appleSnapshot.getRef().removeValue();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
+                    appleSnapshot.getRef().removeValue();
+
+
+                }
+
+                Query applesQuery1 = mDatabase.orderByChild("uniqueID").equalTo(data.get(pos).getUniqueID());
+                applesQuery1.addListenerForSingleValueEvent( new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for (DataSnapshot appleSnapshot : dataSnapshot.getChildren()) {
+                            appleSnapshot.getRef().removeValue();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(tag, "onCancelled", databaseError.toException());
+            }
+        });
+
+
+    }
 
 
 
