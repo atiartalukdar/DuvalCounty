@@ -28,6 +28,7 @@ import java.util.List;
 
 import adapter.ScheduleAdapter;
 import bp.BP;
+import info.atiar.duvalcounty.downloadforms.DownloadFormsActivity;
 import model.ScheduleModel;
 
 public class MainActivity extends AppCompatActivity {
@@ -158,6 +159,10 @@ public class MainActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void downloadForms(View  view){
+        startActivity(new Intent(MainActivity.this, DownloadFormsActivity.class));
     }
 
 }

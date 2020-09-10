@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1021724509427",
+    "firebase_url": "https://duval-county.firebaseio.com",
+    "project_id": "duval-county",
+    "storage_bucket": "duval-county.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1021724509427:android:3010b5edf937362128a386",
+        "android_client_info": {
+          "package_name": "info.atiar.duvalcounty"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1021724509427-0p15us8soacghh4qu2gd5gh4p1u7h4o5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "info.atiar.duvalcounty",
+            "certificate_hash": "b102437c6f1f68fffd584f7b0bab5a4fa5afc5a7"
+          }
+        },
+        {
+          "client_id": "1021724509427-6uutpe2ndic5ggneof58r4m2c3897k4u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDTqYl5haHimeU-EyJzOQYto7YVuEsgXI8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1021724509427-6uutpe2ndic5ggneof58r4m2c3897k4u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
